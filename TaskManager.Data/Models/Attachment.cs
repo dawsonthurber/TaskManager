@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace TaskManager.Data.Models
 {
     public class Attachment
