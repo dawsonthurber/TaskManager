@@ -1,6 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using TaskManager.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<TaskManagerContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
