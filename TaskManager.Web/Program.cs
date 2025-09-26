@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TaskManager.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,22 @@ builder.Services.AddDbContext<TaskManagerContext>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Seed test data
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    TaskManagerContext db = scope.ServiceProvider.GetRequiredService<TaskManagerContext>();
+    db.Database.Migrate();
+
+    if (!db.Tasks.Any())
+    {
+        db.Tasks.AddRange(
+            new TaskManager.Data.Models.Task() { Title = "Buy groceries", OwnerID = "test-user-1" },
+            new TaskManager.Data.Models.Task() { Title = "Do dishes", OwnerID = "test-user-1" }
+        );
+        db.SaveChanges();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -29,6 +46,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
